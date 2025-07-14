@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Movie Database</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+
+<body>
+    <div class="container my-4">
+        <a href="/" class="mb-4 sin-estilo">
+            <h1>Movie Database</h1>
+        </a>
+
+
+        <!-- Formulario de búsqueda -->
+        <form method="get" action="/">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="search" placeholder="Buscar título..."
+                    value="{{ search }}">
+                <input type="text" class="form-control" name="actor" placeholder="Buscar actor..." value="{{ actor }}">
+                <input type="text" class="form-control" name="director" placeholder="Buscar director..."
+                    value="{{ director }}">
+
+                <select class="form-select" name="country">
+                    <option value="">Todos los países</option>
+                    {% for c in countries_list %}
+                    <option value="{{ c.CountryID }}" {% if c.CountryID==country %}selected{% endif %}>
+                        {{ c.Name }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+            </div>
+        </form>
+
+
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for movie in movies %}
+            <div class="col">
+                <div class="card h-100 shadow-sm movie-card">
+                    <img src="{{ url_for('static', filename='images/' + (movie.ImageFilename or 'movie_placeholder.jpg')) }}"
+                        onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/movie_placeholder.jpg') }}';"
+                        class="card-img-top" alt="{{ movie.Title }}">
+
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ movie.Title }}</h5>
+                        <p class="card-text mb-1">
+                            <span class="badge bg-primary">{{ movie.ReleaseYear }}</span>
+                            <span class="badge bg-secondary">{{ movie.Genre }}</span>
+
+                        <p class="mb-1">
+                            <strong>País:</strong>
+                            <span class="fi fi-{{ movie.CountryID|lower }} me-2" style="font-size: 1.5rem;"></span>
+
+                        </p>
+                        </p>
+                        <p class="card-text text-muted">
+                            Directed by <strong>{{ movie.Director }}</strong>
+                        </p>
+                        <a href="{{ url_for('movie_detail', movie_id=movie.MovieID) }}"
+                            class="btn btn-sm btn-outline-primary">View Details</a>
+                        <p></p>
+                        <p class="watched-status">
+
+                            {% if movie.Watched %}✔️ Vista{% else %}<span style="color:red;">❌ No vista</span>{% endif
+                            %}
+                        </p>
+                        <!-- <form action="{{ url_for('mark_watched', movie_id=movie.MovieID) }}" method="post"
+                            class="d-inline">
+                            {% if not movie.Watched %}
+                            <button type="submit" class="btn btn-sm btn-outline-success">✔️ Marcar como vista</button>
+                            {% endif %}
+                        </form> -->
+                        {% if movie.Watched %}
+                        {%else%}
+                        <button class="btn btn-sm btn-outline-success mark-watched-btn"
+                            data-movie-id="{{ movie.MovieID }}">
+                            Marcar como vista
+                        </button>
+                        <span class="watched-text" style="display:none; color: green;">✔️ Vista</span>
+                        {%endif%}
+
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+
+            {# ← Anterior #}
+            {% if page > 1 %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ page - 1 }}{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}">&laquo;</a>
+            </li>
+            {% endif %}
+
+            {# Página 1 #}
+            {% if page > 3 %}
+            <li class="page-item"><a class="page-link"
+                    href="?page=1{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}">1</a>
+            </li>
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+
+            {# Páginas alrededor de la actual #}
+            {% for p in range(page - 2, page + 3) %}
+            {% if p > 0 and p <= total_pages %} <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link"
+                    href="?page={{ p }}{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}">{{
+                    p }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {# Última página #}
+                {% if page < total_pages - 2 %} <li class="page-item disabled"><span class="page-link">...</span></li>
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ total_pages }}{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}">{{
+                            total_pages }}</a></li>
+                    {% endif %}
+
+                    {# → Siguiente #}
+                    {% if page < total_pages %} <li class="page-item">
+                        <a class="page-link"
+                            href="?page={{ page + 1 }}{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}">&raquo;</a>
+                        </li>
+                        {% endif %}
+        </ul>
+    </nav>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

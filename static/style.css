@@ -1,0 +1,63 @@
+/* styles.css */
+.card-title {
+    font-family: 'Georgia', serif;
+}
+
+.card-text {
+    font-size: 0.95rem;
+}
+
+.card-body {
+    padding: 1rem 1.5rem;
+}
+
+.movie-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.movie-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Opcional: mejora para la imagen */
+.movie-card img {
+    object-fit: cover;
+    height: 300px;
+    width: 100%;
+}
+
+/* Bandera al lado del país */
+.country-flag {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+
+/************************************************/
+/* ordenar si quiero la tarjeta 2/3 de proporcion
+/**********************************************/
+.card-img-wrapper {
+    height: 66%;
+    /* 2/3 */
+    overflow: hidden;
+}
+
+.card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-body {
+    height: 34%;
+    /* 1/3 */
+}
+
+a.sin-estilo {
+    text-decoration: none;
+    color: inherit;
+}
