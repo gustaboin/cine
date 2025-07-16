@@ -14,7 +14,7 @@ TMDB_DETAIL_URL = "https://api.themoviedb.org/3/movie"
 conn_str = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=MovieDB;Trusted_Connection=yes;"
 
 # Carpeta raíz donde están las películas
-carpeta_base = r"T:\Cine\ARGENTINAs"
+carpeta_base = r"T:\Cine\Varias"
 
 # Dónde guardar las imágenes
 carpeta_imagenes = "static/images"

@@ -1,6 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: black;
+}
+
+
 /* styles.css */
 .card-title {
-    font-family: 'Georgia', serif;
+    font-family: 'roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 6px;
+    color: #b33951;
+    /* un rosa más oscuro */
 }
 
 .card-text {
@@ -52,12 +66,80 @@
     object-fit: cover;
 }
 
+/*
+Nombre	Hex Code	Descripción breve
+Lavender Blush	#FFF0F5	Muy claro, casi blanco con rosa
+Misty Rose	#FFE4E1	Rosa claro con un toque coral
+Light Pink	#FFB6C1	Rosa tradicional, amigable
+Pink Lace	#FFDDF4	Muy delicado, casi pastel
+Cherry Blossom	#FFEBEF	Rosa japonés suave
+Rose Quartz	#F7CAC9	Rosa sofisticado, tipo Pantone
+*/
+
 .card-body {
     height: 34%;
+    background-color: #FFE4E1;
     /* 1/3 */
 }
 
 a.sin-estilo {
     text-decoration: none;
     color: inherit;
+}
+
+.stylish-select {
+    background-color: #fff0f6;
+    border: 2px solid #ff80ab;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: #6c757d;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(255, 105, 135, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+
+.stylish-select:hover,
+.stylish-select:focus {
+    border-color: #ff4081;
+    color: #f7276c;
+    background-color: #ffe4ec;
+    outline: none;
+}
+
+.badge-lg {
+    font-size: 0.99rem;
+    padding: 0.3em 0.6em;
+    text-decoration: none;
+}
+
+.detail {
+    background-color: rgb(179, 57, 81, 45%);
+    font-weight: bold;
+}
+
+.detail:hover {
+    background-color: #b33951;
+    color: white;
+}
+
+.actor-card {
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease-in-out;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.actor-card:hover {
+    transform: scale(1.03);
+}
+
+.actor-img {
+    object-fit: cover;
+    width: 100%;
+    height: 250px;
+}
+
+.col-md-8 {
+    background-color: #b33951;
 }
