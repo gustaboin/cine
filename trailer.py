@@ -6,7 +6,7 @@ import requests
 import time
 
 # Claves de configuración
-API_KEY = "AIzaSyD-_9_xHXWOp6hkmHmeny0iHJM8KrcDV5E"
+
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 
 # Conexión a la base de datos
