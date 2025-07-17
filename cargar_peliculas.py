@@ -4,17 +4,21 @@ import requests
 import pyodbc
 import time
 from urllib.parse import quote
+from dotenv import load_dotenv
 
 # TMDb
-API_KEY = "cb88900896421377af357e7889a646c0"
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+print("API KEY TMDB:", API_KEY)
 TMDB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_DETAIL_URL = "https://api.themoviedb.org/3/movie"
 
 # SQL Server connection
-conn_str = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=MovieDB;Trusted_Connection=yes;"
+conn_str = os.getenv("conn_str")
+print (conn_str)
 
 # Carpeta raíz donde están las películas
-carpeta_base = r"T:\Cine\Varias"
+carpeta_base = r"T:\Cine\Adam McKay"
 
 # Dónde guardar las imágenes
 carpeta_imagenes = "static/images"

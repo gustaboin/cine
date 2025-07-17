@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icon.min.css" />
     <link rel="stylesheet" href="/static/style.css">
 
+
 </head>
 
 <body>
@@ -55,7 +56,7 @@
     </div>
 -->
     <div class="container my-5">
-        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary mb-4">← Volver al listado</a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mb-4">← Volver al listado</a>
 
         <div class="card shadow-lg">
             <div class="row g-0">
@@ -84,6 +85,14 @@
                         </p>
 
                         <p class="mb-3"><strong>Género:</strong> {{ movie.Genre }}</p>
+
+                        <!--Trailer-->
+                        {% if movie.TrailerURL %}
+                        <button type="button" class="btn btn-danger trailer" data-bs-toggle="modal"
+                            data-bs-target="#trailerModal">
+                            ▶ Ver Tráiler
+                        </button>
+                        {% endif %}
 
                         <!-- Actores destacados -->
                         <div class="container">
@@ -114,7 +123,29 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal para video de trailer -->
+
+    <div class="modal fade" id="trailerModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🎬 Ver Trailer 🎬 </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="trailerFrame" width="100%" height="400"
+                        src="https://www.youtube.com/embed/{{ movie.TrailerURL }}" allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/script.js"></script>
 
 </html>

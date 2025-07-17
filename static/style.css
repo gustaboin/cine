@@ -143,3 +143,9 @@ a.sin-estilo {
 .col-md-8 {
     background-color: #b33951;
 }
+
+.trailer:hover {
+    background-color: #a59494;
+    text-decoration: dotted;
+    color: black;
+}

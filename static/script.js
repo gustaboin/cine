@@ -36,3 +36,18 @@ document.addEventListener('DOMContentLoaded', () =>
     });
 });
 
+
+// modal para que se cierre la reproduccion del trailer
+
+document.addEventListener('DOMContentLoaded', function ()
+{
+    const trailerModal = document.getElementById('trailerModal');
+    const trailerFrame = document.getElementById('trailerFrame');
+
+    trailerModal.addEventListener('hidden.bs.modal', function ()
+    {
+        // Detener el video reiniciando el src
+        const src = trailerFrame.getAttribute('src');
+        trailerFrame.setAttribute('src', src);
+    });
+});

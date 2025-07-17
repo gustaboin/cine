@@ -59,15 +59,15 @@ def index():
 
         # Películas paginadas
         query = f"""
-            SELECT DISTINCT M.MovieID, M.Title, M.ReleaseYear, M.ImageFilename, 
-                    D.Name AS Director, G.Name AS Genre, M.CountryID, M.Watched
+            SELECT DISTINCT M.MovieID, M.Title, M.ReleaseYear, M.ImageFilename, M.TrailerURL,
+                    D.Name AS Director, G.Name AS Genre, M.CountryID, M.Watched, M.IMDbRating
             FROM Movies M
             LEFT JOIN MovieActors MA ON M.MovieID = MA.MovieID
             LEFT JOIN Actors A ON MA.ActorID = A.ActorID
             JOIN Directors D ON M.DirectorID = D.DirectorID
             JOIN Genres G ON M.GenreID = G.GenreID
             {where_clause}
-            ORDER BY M.ReleaseYear desc
+            ORDER BY M.IMDbRating desc
             OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
         """
         cursor.execute(query, params + [offset, per_page])
@@ -99,7 +99,7 @@ def movie_detail(movie_id):
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT M.Title, M.ReleaseYear, M.ImageFilename, M.Watched, D.Name as Director, G.Name as Genre, C.Name as Country
+            SELECT M.Title, M.ReleaseYear, M.ImageFilename, M.Watched, M.IMDbRating, M.TrailerURL, D.Name as Director, G.Name as Genre, C.Name as Country
             FROM Movies M
             JOIN Directors D ON M.DirectorID = D.DirectorID
             JOIN Genres G ON M.GenreID = G.GenreID
