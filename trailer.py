@@ -5,7 +5,7 @@ import pyodbc
 import requests
 import time
 
-# Claves de configuración
+# Claves de configuración.-
 
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 
