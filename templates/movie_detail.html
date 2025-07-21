@@ -56,7 +56,7 @@
     </div>
 -->
     <div class="container my-5">
-        <a href="{{ url_for('index') }}" class="btn btn-secondary mb-4">← Volver al listado</a>
+        <a href="{{ previous_url }}" class="btn btn-secondary mb-4">← Volver al listado</a>
 
         <div class="card shadow-lg">
             <div class="row g-0">
@@ -76,7 +76,7 @@
                         <p class="mb-1">
                             <span class="me-2"><strong>País:</strong></span>
                             <span class="fi fi-{{ country_code|lower }}" style="font-size: 1.4rem;"></span>
-                            {{ country_name }}
+                            {{ movie.Country }}
                         </p>
 
                         <p class="mb-1"><strong>Director:</strong>
@@ -95,17 +95,18 @@
                         {% endif %}
 
                         <!-- Actores destacados -->
-                        <div class="container">
-                            <h4 class="mb-4">Reparto</h4>
+                        <div class="card mt-4 p-4 reparto-section"> <!-- cambio el bg-light de boostrap x otro estilo-->
+                            <h4 class="mb-3">🎭 Reparto</h4>
                             <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
                                 {% for actor in actors %}
                                 <div class="col">
-                                    <div class="card actor-card text-center h-100"><a
-                                            href="/?actor={{ actor.Name | urlencode }}" class="text-decoration-none">
+                                    <div class="card actor-card text-center h-100">
+                                        <a href="/?actor={{ actor.Name | urlencode }}" class="text-decoration-none">
                                             {% set actor_img = actor.ImageFilename if actor.ImageFilename else
                                             'null.jpg' %}
                                             <img src="{{ url_for('static', filename='images/actors/' + actor_img) }}"
-                                                class="card-img-top actor-img" alt="{{ actor.Name }}">
+                                                class="card-img-top actor-img {% if actor.is_null %}img-null{% endif %}"
+                                                alt="{{ actor.Name }}">
                                             <div class="card-body p-2">
                                                 <h6 class="card-title mb-0">{{ actor.Name }}</h6>
                                             </div>
@@ -115,8 +116,6 @@
                                 {% endfor %}
                             </div>
                         </div>
-
-
                     </div>
                 </div>
             </div>

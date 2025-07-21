@@ -13,7 +13,7 @@ conn = pyodbc.connect(conn_str)
 #print("connection", conn)
 cursor = conn.cursor()
 
-cursor.execute("SELECT top 1 MovieID, Title, ReleaseYear FROM Movies WHERE ImdbRating IS NULL")
+cursor.execute("SELECT MovieID, EnglishTitle, ReleaseYear FROM Movies WHERE DirectorID = 638 and ImdbRating is null") #ImdbRating is null and EnglishTitle is not null")
 movies = cursor.fetchall()
 
 for movie in movies:

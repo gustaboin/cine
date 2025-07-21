@@ -1,27 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Movie Database</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
-    <link rel="stylesheet" href="/static/style.css">
 
-</head>
-
+{% block content %}
 
 <body>
 
 
-    <div class="container my-4">
+    <!--    <div class="container my-4">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
             <div class="container-fluid d-flex justify-content-between align-items-center">
                 <a class="navbar-brand" href="/">🎬 Movie Database</a>
-                <span class="badge bg-info text-dark fs-6">
-                    Películas Totales: {{ total_movies }}
-                </span>
+                <div class="d-flex justify-content-end align-items-center">
+                    <a href="/sagas" class="btn btn-danger me-2">
+                        Sagas
+                    </a>
+                    <button class="btn btn-info me-2">
+                        🎬 Total: {{ total_movies }}
+                    </button>
+                    <button class="btn btn-success">
+                        👁️ Vistas: {{ total_watched }}
+                    </button>
+                </div>
+
             </div>
         </nav>
 
@@ -43,94 +43,93 @@
 
                 <button class="btn btn-success" type="submit">Buscar</button>
             </div>
-        </form>
+        </form> -->
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for movie in movies %}
+        <div class="col">
+            <div class="card h-100 shadow-sm movie-card">
+
+                <img src="{{ url_for('static', filename='images/movies/' + (movie.ImageFilename or 'movie_placeholder.jpg')) }}"
+                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/movie_placeholder.jpg') }}';"
+                    class="card-img-top" alt="{{ movie.Title }}">
+
+
+                <div class="card-body                {% if movie.Watched %} 
+                watched
+                {% else %}
+                not-watched
+                {% endif %}">
+                    <h5 class="card-title">{{ movie.Title }}</h5>
+                    <p class="card-text mb-1">
+
+                        <a href="{{ url_for('index', director=movie.Director) }}" class="badge bg-secondary badge-lg">
+                            {{ movie.Director }}
+                        </a>
+                    </p>
+                    <p class="card-text mb-1">
+                        <span class="badge bg-primary badge-lg">{{ movie.ReleaseYear }}</span>
+                        <span class="badge bg-secondary badge-lg">{{ movie.Genre }}</span>
+                    </p>
+                    <br>
+                    <p class="mb-1">
+                        <strong>País:</strong>
+                        <span class="fi fi-{{ movie.CountryID|lower }} me-2" style="font-size: 1.5rem;"></span>
+
+                    </p>
+                    <br>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                        {% if movie.IMDbRating %}
+                        {% set rating = movie.IMDbRating %}
+                        {% if rating >= 8 %}
+                        {% set badge_class = "bg-info text-dark" %}
+                        {% elif rating >= 6 %}
+                        {% set badge_class = "bg-success" %}
+                        {% elif rating >= 4 %}
+                        {% set badge_class = "bg-warning text-dark" %}
+                        {% else %}
+                        {% set badge_class = "bg-danger" %}
+                        {% endif %}
+
+                        <span class="badge {{badge_class}} text-dark fs-5">
+                            ⭐ {{ movie.IMDbRating }}/10
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary fs-5">
+                            ⭐??/10
+                        </span>
+
+                        {% endif %}
+
+
+                        <a href="{{ url_for('movie_detail', movie_id=movie.MovieID) }}"
+                            class="btn btn-sm btn-outline-dark detail">Ver detalles</a>
 
 
 
+                        {% if movie.Watched %}
+                        <button class="btn btn-sm btn-outline-dark">👁️ Vista</buton>
 
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            {% for movie in movies %}
-            <div class="col">
-                <div class="card h-100 shadow-sm movie-card">
-                    <img src="{{ url_for('static', filename='images/movies/' + (movie.ImageFilename or 'movie_placeholder.jpg')) }}"
-                        onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/movie_placeholder.jpg') }}';"
-                        class="card-img-top" alt="{{ movie.Title }}">
-
-
-                    <div class="card-body">
-                        <h5 class="card-title">{{ movie.Title }}</h5>
-                        <p class="card-text mb-1">
-
-                            <a href="{{ url_for('index', director=movie.Director) }}"
-                                class="badge bg-secondary badge-lg">
-                                {{ movie.Director }}
-                            </a>
-                        </p>
-                        <p class="card-text mb-1">
-                            <span class="badge bg-primary badge-lg">{{ movie.ReleaseYear }}</span>
-                            <span class="badge bg-secondary badge-lg">{{ movie.Genre }}</span>
-                        </p>
-                        <br>
-                        <p class="mb-1">
-                            <strong>País:</strong>
-                            <span class="fi fi-{{ movie.CountryID|lower }} me-2" style="font-size: 1.5rem;"></span>
-
-                        </p>
-                        <br>
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-
-                            {% if movie.IMDbRating %}
-                            {% set rating = movie.IMDbRating %}
-                            {% if rating >= 8 %}
-                            {% set badge_class = "bg-info text-dark" %}
-                            {% elif rating >= 6 %}
-                            {% set badge_class = "bg-success" %}
-                            {% elif rating >= 4 %}
-                            {% set badge_class = "bg-warning text-dark" %}
                             {% else %}
-                            {% set badge_class = "bg-danger" %}
-                            {% endif %}
-
-                            <span class="badge {{badge_class}} text-dark fs-5">
-                                ⭐ {{ movie.IMDbRating }}/10
-                            </span>
-                            {% else %}
-                            <span class="badge bg-secondary fs-5">
-                                ⭐??/10
-                            </span>
-
-                            {% endif %}
-
-
-                            <a href="{{ url_for('movie_detail', movie_id=movie.MovieID) }}"
-                                class="btn btn-sm btn-outline-dark detail">View Details</a>
-
-
+                            {%
+                            endif
+                            %}
 
                             {% if movie.Watched %}
-                            <button class="btn btn-sm btn-warning">✔️ Vista</buton>
+                            {%else%}
+                            <button class="btn btn-sm btn-success mark-watched-btn" data-movie-id="{{ movie.MovieID }}">
+                                Marcar como vista
+                            </button>
 
-                                {% else %}
-                                {%
-                                endif
-                                %}
-
-                                {% if movie.Watched %}
-                                {%else%}
-                                <button class="btn btn-sm btn-outline-success mark-watched-btn"
-                                    data-movie-id="{{ movie.MovieID }}">
-                                    Marcar como vista
-                                </button>
-
-                                <span class="watched-text" style="display:none; color: green;">✔️ Vista</span>
-                                {%endif%}
-                        </div>
+                            <span class="watched-text" style="display:none; color: green;">👁️ Vista</span>
+                            {%endif%}
                     </div>
                 </div>
-
             </div>
-            {% endfor %}
+
         </div>
+        {% endfor %}
+    </div>
     </div>
     {# Armar parámetros reutilizables para los enlaces #}
     {% set query_params = '' %}
@@ -139,49 +138,8 @@
     {% if director %}{% set query_params = query_params + '&director=' + director %}{% endif %}
     {% if country %}{% set query_params = query_params + '&country=' + country %}{% endif %}
 
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            {% if page > 1 %}
-            <li class="page-item">
-                <a class="page-link"
-                    href="?page={{ page - 1 }}{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}{% if director %}&director={{ director }}{% endif %}{% if country %}&country={{ country }}{% endif %}">&laquo;</a>
-            </li>
-            {% endif %}
-
-            {% if page > 3 %}
-            <li class="page-item"><a class="page-link"
-                    href="?page=1{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}{% if director %}&director={{ director }}{% endif %}{% if country %}&country={{ country }}{% endif %}">1</a>
-            </li>
-            <li class="page-item disabled"><span class="page-link">...</span></li>
-            {% endif %}
-
-            {% for p in range(page - 2, page + 3) %}
-            {% if p > 0 and p <= total_pages %} <li class="page-item {% if p == page %}active{% endif %}">
-                <a class="page-link"
-                    href="?page={{ p }}{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}{% if director %}&director={{ director }}{% endif %}{% if country %}&country={{ country }}{% endif %}">{{
-                    p }}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-
-                {% if page < total_pages - 2 %} <li class="page-item disabled"><span class="page-link">...</span></li>
-                    <li class="page-item"><a class="page-link"
-                            href="?page={{ total_pages }}{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}{% if director %}&director={{ director }}{% endif %}{% if country %}&country={{ country }}{% endif %}">{{
-                            total_pages }}</a></li>
-                    {% endif %}
-
-                    {% if page < total_pages %} <li class="page-item">
-                        <a class="page-link"
-                            href="?page={{ page + 1 }}{% if search %}&search={{ search }}{% endif %}{% if actor %}&actor={{ actor }}{% endif %}{% if director %}&director={{ director }}{% endif %}{% if country %}&country={{ country }}{% endif %}">&raquo;</a>
-                        </li>
-                        {% endif %}
-        </ul>
-    </nav>
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/script.js"></script>
+    {% endblock %}
 </body>
+
 
 </html>

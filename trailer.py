@@ -4,13 +4,15 @@
 import pyodbc
 import requests
 import time
+import os
+from dotenv import load_dotenv
 
 # Claves de configuración.-
 
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 
 # Conexión a la base de datos
-conn = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=MovieDB;Trusted_Connection=yes;")
+conn_str = os.getenv("conn_str")
 cursor = conn.cursor()
 
 def buscar_trailer_en_youtube(titulo):
@@ -102,7 +104,7 @@ def obtener_trailer_key(titulo):
         return None
 
 # Obtener películas sin trailer
-cursor.execute("SELECT MovieID, Title FROM Movies WHERE TrailerURL IS NULL")
+cursor.execute("SELECT MovieID, EnglishTitle FROM Movies WHERE TrailerURL IS NULL and ImdbRating is not null")
 peliculas = cursor.fetchall()
 
 for movie_id, title in peliculas:
