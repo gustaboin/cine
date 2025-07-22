@@ -3,37 +3,11 @@
 {% block content %}
 
 <body>
-    <!-- Navbar para sagas-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4    ">
-        <div class="container" style="max-width: 960px;">
-            <a class="navbar-brand" href="#">Mis Sagas</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSagas"
-                aria-controls="navbarSagas" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSagas">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/">INICIO</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Todas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Favoritas</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Por Progreso</a>
-                    </li>
-                    
-    </ul>
-    </div>
-    </div>
-    </nav>-->
+
 
     <!-- contenido del carrousel -->
 
-    <div id="sagaCarousel" class="carousel slide mx-auto" style="max-width: 960px;" data-bs-ride="carousel">
+    <div id="sagaCarousel" class="carousel slide mx-auto" data-bs-ride="carousel">
         <div class="carousel-inner">
             {% for i in range(0, sagas|length, 3) %}
             <div class="carousel-item {% if i == 0 %}active{% endif %}">

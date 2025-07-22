@@ -59,3 +59,15 @@ document.addEventListener('DOMContentLoaded', () =>
         });
     }
 });
+
+
+// mensajes flash efimeros 5 sec
+
+setTimeout(function ()
+{
+    var flashMessage = document.getElementById('flash-message');
+    if (flashMessage)
+    {
+        flashMessage.style.display = 'none'; // Oculta el mensaje
+    }
+}, 5000);

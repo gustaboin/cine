@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{{ url_for('movie_detail', movie_id=movie.MovieID) }}" class="btn btn-secondary m-2">← Volver a
+            detalles</a>
+        <h2 class="mb-0 admin-title">Editar Película: {{ movie.Title }} - {{ movie.ReleaseYear }}</h2>
+    </div>
+    <form method="POST" action="{{ url_for('edit_movie', movie_id=movie.MovieID) }}"
+        class="bg-light p-4 rounded shadow">
+        <div class="mb-3">
+            <label for="title" class="form-label">Título</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ movie.Title }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="release_year" class="form-label">Año de Estreno</label>
+            <input type="number" class="form-control" id="release_year" name="release_year"
+                value="{{ movie.ReleaseYear }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="country_id" class="form-label">País</label>
+            <select class="form-select" id="country_id" name="country_id" required>
+                {% for country in countries_list %}
+                <option value="{{ country.CountryID }}" {% if country.CountryID==movie.CountryID %}selected{% endif %}>
+                    {{ country.Name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="director_id" class="form-label">Director</label>
+            <select class="form-select" id="director_id" name="director_id" required>
+                {% for director in directors_list %}
+                <option value="{{ director.DirectorID }}" {% if director.DirectorID==movie.DirectorID %}selected{% endif
+                    %}>{{ director.Name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="title" class="form-label">Filename</label>
+            <input type="text" class="form-control" id="title" name="Filename" value="{{ movie.ImageFilename }}"
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="title" class="form-label">IMDb Rating</label>
+            <input type="text" class="form-control" id="title" name="IMDbRating" value="{{ movie.IMDbRating }}"
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="title" class="form-label">TrailerURL</label>
+            <input type="text" class="form-control" id="title" name="TrailerURL" value="{{ movie.TrailerURL }}"
+                required>
+        </div>
+        <div class="mb-3">
+            <label for="saga_id" class="form-label">Saga</label>
+            <select name="saga_id" class="form-control">
+                <option value="">Seleccione una Saga</option> <!-- Opción por defecto -->
+                {% for saga in saga_list %}
+                <option value="{{ saga.SagaID }}" {% if saga.SagaID==movie.SagaID %}selected{% endif %}>
+                    {{ saga.Name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Guardar Cambios</button>
+        <a href="{{ url_for('movie_detail', movie_id=movie.MovieID) }}" class="btn btn-secondary w-100 mt-2">Cancelar
+        </a>
+    </form>
+</div>
+{% endblock %}

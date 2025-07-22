@@ -4,46 +4,6 @@
 {% block content %}
 
 <body>
-
-
-    <!--    <div class="container my-4">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-            <div class="container-fluid d-flex justify-content-between align-items-center">
-                <a class="navbar-brand" href="/">🎬 Movie Database</a>
-                <div class="d-flex justify-content-end align-items-center">
-                    <a href="/sagas" class="btn btn-danger me-2">
-                        Sagas
-                    </a>
-                    <button class="btn btn-info me-2">
-                        🎬 Total: {{ total_movies }}
-                    </button>
-                    <button class="btn btn-success">
-                        👁️ Vistas: {{ total_watched }}
-                    </button>
-                </div>
-
-            </div>
-        </nav>
-
-        <form method="get" action="/">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" name="search" placeholder="Buscar título..."
-                    value="{{ search }}">
-                <input type="text" class="form-control" name="actor" placeholder="Buscar actor..." value="{{ actor }}">
-                <input type="text" class="form-control" name="director" placeholder="Buscar director..."
-                    value="{{ director }}">
-
-                <select id="country" name="country" class="form-select w-auto stylish-select"
-                    onchange="this.form.submit()">
-                    <option value="">-- Seleccionar país --</option>
-                    {% for code, name in countries_list %}
-                    <option value="{{ code }}" {% if country==code %}selected{% endif %}>{{ name }}</option>
-                    {% endfor %}
-                </select>
-
-                <button class="btn btn-success" type="submit">Buscar</button>
-            </div>
-        </form> -->
     <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for movie in movies %}
         <div class="col">

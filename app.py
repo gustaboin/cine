@@ -1,11 +1,29 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
 import pyodbc
 import math
 import random
 import os
 from dotenv import load_dotenv
+#login libraries
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
+app.secret_key = 'claveGus'  # Cambia esto a una clave secreta real
+
+# Configuración de Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+class User(UserMixin):
+    id = 'admin'
+    password = '$Maria!'
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id == User.id:
+        return User()
+    return None
+
 
 load_dotenv()
 
@@ -105,7 +123,7 @@ def movie_detail(movie_id):
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT M.Title, M.ReleaseYear, M.ImageFilename, M.Watched, M.IMDbRating, M.TrailerURL, D.Name as Director, G.Name as Genre, C.Name as Country
+            SELECT M.movieID, M.Title, M.ReleaseYear, M.ImageFilename, M.Watched, M.IMDbRating, M.TrailerURL, D.Name as Director, G.Name as Genre, C.Name as Country
             FROM Movies M
             JOIN Directors D ON M.DirectorID = D.DirectorID
             JOIN Genres G ON M.GenreID = G.GenreID
@@ -204,6 +222,112 @@ def ver_saga(slug):
         movies = cursor.fetchall()
 
     return render_template("ver_saga.html", saga=saga, movies=movies)
+
+# en la siguiente seccion va una ruta para administrar las peliculas
+
+# login para que solo una persona pueda editar las pelis
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Verifica las credenciales
+        if username == 'administrador' and password == 'admin123':
+            user = User()  # Crea una instancia del usuario
+            login_user(user)  # Inicia sesión
+            return redirect(url_for('admin_movies'))  # Redirige al panel de administración
+        else:
+            flash('Credenciales incorrectas. Intenta de nuevo.', 'danger')
+
+    return render_template('login.html')
+
+#logout
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()  # Cierra la sesión del usuario
+    flash('Has cerrado sesión exitosamente.', 'success')  # Mensaje de éxito
+    return redirect(url_for('index'))   # Redirige a la página de inicio de sesión
+
+
+@app.route('/admin/movies')
+def admin_movies():
+
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    page = int(request.args.get('page', 1))
+    per_page = 15
+    offset = (page - 1) * per_page
+
+    with pyodbc.connect(conn_str) as conn:
+        cursor = conn.cursor()
+
+        # Contar el total de películas
+        cursor.execute("SELECT COUNT(*) FROM Movies")
+        total_movies = cursor.fetchone()[0]
+
+        # Obtener las películas paginadas
+        cursor.execute("SELECT MovieID, Title, ReleaseYear, CountryID FROM Movies ORDER BY Title OFFSET ? ROWS FETCH NEXT ? ROWS ONLY", (offset, per_page))
+        movies = cursor.fetchall()
+
+    total_pages = math.ceil(total_movies / per_page)
+
+     # Calcular el rango de páginas a mostrar
+    page_range = 2  # Número de páginas a mostrar a cada lado de la página actual
+    start_page = max(1, page - page_range)
+    end_page = min(total_pages, page + page_range)
+
+    return render_template("admin.html", movies=movies, page=page, total_pages=total_pages, start_page=start_page, end_page=end_page)
+
+
+@app.route('/edit_movie/<int:movie_id>', methods=['GET', 'POST'])
+def edit_movie(movie_id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    
+    with pyodbc.connect(conn_str) as conn:
+        cursor = conn.cursor()
+
+        if request.method == 'POST':
+            title = request.form['title']
+            release_year = request.form['release_year']
+            country_id = request.form['country_id']
+            director_id = request.form['director_id']
+            ImageFilename = request.form['Filename'] or None
+            IMDbRating = request.form['IMDbRating'] or None
+            TrailerURL = request.form['TrailerURL'] or None
+            SagaId =  request.form['saga_id'] or None
+            
+            print(f"Updating movie: {title}, {release_year}, {country_id}, {director_id}, {ImageFilename}, {IMDbRating}, {TrailerURL}, {SagaId}, {movie_id}")
+
+            try:
+                cursor.execute("""
+                    UPDATE Movies
+                    SET Title = ?, ReleaseYear = ?, CountryID = ?, DirectorID = ?, ImageFilename = ?,  IMDbRating =?, TrailerURL=?, SagaId=?
+                    WHERE MovieID = ?
+                """, (title, release_year, country_id, director_id, ImageFilename, IMDbRating,TrailerURL,SagaId, movie_id))
+                conn.commit()
+                flash('Pelicula Actualizada Correctamente.', 'success')
+                return redirect(url_for('movie_detail', movie_id=movie_id))  # Redirigir a los detalles de la película
+            except Exception as e:
+                print(f"[ERROR] Al editar película: {e}")
+        # Cargar datos de la película
+        cursor.execute("SELECT * FROM Movies WHERE MovieID = ?", (movie_id,))
+        movie = cursor.fetchone()
+
+        # Obtener listas de países y directores para el formulario
+        cursor.execute("SELECT CountryID, Name FROM Countries ORDER BY Name")
+        countries_list = cursor.fetchall()
+
+        cursor.execute("SELECT DirectorID, Name FROM Directors ORDER BY Name")
+        directors_list = cursor.fetchall()
+        
+        cursor.execute("SELECT SagaID, Name FROM Saga ORDER BY Name")
+        saga_list = cursor.fetchall()
+
+    return render_template("edit_movie.html", movie=movie, countries_list=countries_list, directors_list=directors_list, saga_list=saga_list)
 
 
 

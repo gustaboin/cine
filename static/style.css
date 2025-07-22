@@ -5,6 +5,43 @@ body {
     background-color: black;
 }
 
+.nav-title {
+    font-size: 1.5rem;
+    color: white;
+    /* Color inicial */
+    transition: transform 0.3s, color 0.3s;
+}
+
+.nav-title:hover {
+    color: #FFC107;
+    /* Color amarillo */
+    transform: scale(1.1) rotate(-2deg);
+}
+
+.btn-saga {
+    background-color: #FFC107;
+    border-color: #2c2c2c;
+}
+
+.btn-total {
+    background-color: #db7d2f;
+    border-color: #2c2c2c;
+
+}
+
+.btn-total:hover {
+    background-color: rgb(219, 125, 47);
+}
+
+.btn-view {
+    background-color: #2c7c94;
+    border-color: #2c2c2c;
+    color: white;
+}
+
+.btn-view:hover {
+    background-color: #2c7c94;
+}
 
 /* styles.css */
 .card-title {
@@ -184,8 +221,10 @@ a.sin-estilo {
     color: #ffffff;
 }
 
+
 /* estilo de las tarjetas de sagas */
 .saga-card {
+    border: 1px solid #ddd;
     border-radius: 12px;
     background-color: #fefefe;
     transition: transform 0.2s ease-in-out;
@@ -239,4 +278,118 @@ a.sin-estilo {
     height: 3rem;
     background-size: 50% 50%;
     /* más nítido */
+}
+
+/***********************************************/
+/****** seccion Administracion ****************/
+/*********************************************/
+
+.admin-title {
+    color: #72db9a;
+}
+
+.admin-title:hover {
+    transform: scale(1.03);
+}
+
+
+/*******************************************/
+/********** login **************************/
+/*******************************************/
+
+.init-session {
+
+    margin: 20px 0px 20px 40px;
+    color: #72db9a !important;
+}
+
+.login {
+    background-image: url('https://getwallpapers.com/wallpaper/full/5/7/4/13663.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    font-family: 'Numans', sans-serif;
+}
+
+.login-container {
+    height: 100%;
+    align-content: center;
+}
+
+.login-card {
+    height: 370px;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 400px;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-radius: 5%;
+}
+
+.social_icon span {
+    font-size: 60px;
+    margin-left: 10px;
+    color: #72db9a;
+}
+
+.social_icon span:hover {
+    color: white;
+    cursor: pointer;
+}
+
+.login-card-header h3 {
+    color: white;
+}
+
+.login-card-body {
+    margin: 10px 30px;
+}
+
+.social_icon {
+    position: absolute;
+    right: 20px;
+    top: 25px;
+}
+
+.input-group-prepend span {
+    width: 50px;
+    background-color: #72db9a;
+    margin-right: 20 px;
+    color: black;
+    border: 0 !important;
+}
+
+input:focus {
+    outline: 0 0 0 0 !important;
+    box-shadow: 0 0 0 0 !important;
+
+}
+
+.remember {
+    color: white;
+}
+
+.remember input {
+    width: 20px;
+    height: 20px;
+    margin-left: 15px;
+    margin-right: 5px;
+}
+
+.login_btn {
+    color: black;
+    background-color: #72db9a;
+    width: 100px;
+}
+
+.login_btn:hover {
+    color: black;
+    background-color: white;
+}
+
+.links {
+    color: white;
+}
+
+.links a {
+    margin-left: 4px;
 }
