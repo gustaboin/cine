@@ -4,30 +4,42 @@ import math
 import random
 import os
 from dotenv import load_dotenv
-#login libraries
+from datetime import timedelta
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
-app = Flask(__name__)
-app.secret_key = 'claveGus'  # Cambia esto a una clave secreta real
 
-# Configuración de Flask-Login
+# Inicialización
+app = Flask(__name__)
+app.secret_key = 'claveGus'
+app.permanent_session_lifetime = timedelta(seconds=30)
+
+# Flask-Login setup
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
 
+# Cargar variables de entorno
+load_dotenv()
+conn_str = os.getenv("conn_str")
+ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+ADMIN_PASS = os.getenv("ADMIN_PASS", "password")
+
+# Clase de usuario
 class User(UserMixin):
-    id = 'admin'
-    password = '$Maria!'
+    def __init__(self, id):
+        self.id = id
 
+# Cargador de usuario para Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
-    if user_id == User.id:
-        return User()
+    if user_id == ADMIN_USER:
+        return User(id=user_id)
     return None
 
-
-load_dotenv()
-
-conn_str = os.getenv("conn_str")
+# Renovar sesión en cada petición
+@app.before_request
+def renovar_sesion():
+    session.permanent = True
 
 # 🔗 Conexión a SQL Server
 
@@ -233,15 +245,16 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        # Verifica las credenciales
-        if username == 'administrador' and password == 'admin123':
-            user = User()  # Crea una instancia del usuario
-            login_user(user)  # Inicia sesión
-            return redirect(url_for('admin_movies'))  # Redirige al panel de administración
+        if username == ADMIN_USER and password == ADMIN_PASS:
+            user = User(id=username)
+            login_user(user)
+            session.permanent = True
+            return redirect(url_for('admin_movies'))
         else:
             flash('Credenciales incorrectas. Intenta de nuevo.', 'danger')
 
     return render_template('login.html')
+
 
 #logout
 @app.route('/logout')
@@ -249,7 +262,7 @@ def login():
 def logout():
     logout_user()  # Cierra la sesión del usuario
     flash('Has cerrado sesión exitosamente.', 'success')  # Mensaje de éxito
-    return redirect(url_for('index'))   # Redirige a la página de inicio de sesión
+    return redirect(request.referrer or url_for('index')) # Redirige a la página de inicio de sesión
 
 
 @app.route('/admin/movies')
@@ -328,6 +341,7 @@ def edit_movie(movie_id):
         saga_list = cursor.fetchall()
 
     return render_template("edit_movie.html", movie=movie, countries_list=countries_list, directors_list=directors_list, saga_list=saga_list)
+
 
 
 

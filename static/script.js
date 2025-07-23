@@ -70,4 +70,30 @@ setTimeout(function ()
     {
         flashMessage.style.display = 'none'; // Oculta el mensaje
     }
-}, 5000);
+}, 2500);
+
+
+// logout por inactividad 
+/*
+let inactivityTime = function ()
+{
+    let timer;
+    const timeoutDuration = 60000; // 10 minutos en milisegundos
+
+    const resetTimer = () =>
+    {
+        clearTimeout(timer);
+        timer = setTimeout(() =>
+        {
+            // Cerrar sesión por inactividad
+            window.location.href = '/logout';
+        }, timeoutDuration);
+    };
+
+    // Eventos para reiniciar el temporizador
+    window.onload = resetTimer;
+    window.onmousemove = resetTimer;
+    window.onkeydown = resetTimer;
+};
+inactivityTime();
+*/
