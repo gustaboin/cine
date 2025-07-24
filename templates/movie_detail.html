@@ -15,7 +15,7 @@
 <body>
     <div class="container my-5">
         <div class="d-flex justify-content-between mb-4">
-            <a href="{{ previous_url }}" class="btn btn-secondary m-2">← Volver al listado</a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary m-2">← Volver al listado</a>
             <div class="d-flex float-right-between">
                 {% if current_user.is_authenticated %}
                 <a href="{{ url_for('edit_movie', movie_id=movie.movieID) }}" class="btn btn-warning m-2">Editar</a>

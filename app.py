@@ -11,7 +11,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 # Inicialización
 app = Flask(__name__)
 app.secret_key = 'claveGus'
-app.permanent_session_lifetime = timedelta(seconds=30)
+app.permanent_session_lifetime = timedelta(seconds=180)
 
 # Flask-Login setup
 login_manager = LoginManager()
