@@ -5,8 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ movie.Title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icon.min.css" />
+
     <link rel="stylesheet" href="/static/style.css">
 
 
@@ -52,7 +53,6 @@
 
                         <p class="mb-1">
                             <span class="me-2"><strong>País:</strong></span>
-                            <span class="fi fi-{{ country_code|lower }}" style="font-size: 1.4rem;"></span>
                             {{ movie.Country }}
                         </p>
 
@@ -73,7 +73,10 @@
 
                         <!-- Actores destacados -->
                         <div class="card mt-4 p-4 reparto-section">
-                            <h4 class="mb-3">🎭 Reparto</h4>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">🎭 Reparto</h4>
+                                <span class="fi fi-{{ movie.CountryID|lower }} me-2"></span>
+                            </div>
                             <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
                                 {% for actor in actors %}
                                 <div class="col">

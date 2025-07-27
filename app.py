@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from datetime import timedelta
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from urllib.parse import urlencode
 
 
 # Inicialización
@@ -43,13 +44,14 @@ def renovar_sesion():
 
 # 🔗 Conexión a SQL Server
 
-
 @app.route('/')
 def index():
     search = request.args.get('search', '')
     actor = request.args.get('actor', '')
     director = request.args.get('director', '')
     country = request.args.get('country', '')
+    genre = request.args.get('genre', '')
+    order_by = request.args.get('order_by', 'IMDbRating')  # Parámetro de ordenación
     page = int(request.args.get('page', 1))
     per_page = 9
     offset = (page - 1) * per_page
@@ -70,6 +72,9 @@ def index():
     if country:
         filters.append("M.CountryID = ?")
         params.append(country)
+    if genre:
+        filters.append("M.GenreID = ?")
+        params.append(genre)
 
     where_clause = "WHERE " + " AND ".join(filters) if filters else ""
 
@@ -83,24 +88,38 @@ def index():
             LEFT JOIN MovieActors MA ON M.MovieID = MA.MovieID
             LEFT JOIN Actors A ON MA.ActorID = A.ActorID
             JOIN Directors D ON M.DirectorID = D.DirectorID
+            LEFT JOIN Genres G ON M.GenreID = G.GenreID
             {where_clause}
         """
         cursor.execute(count_query, params)
         total = cursor.fetchone()[0]
 
         # Películas paginadas
+        order_clause = {
+            'title': 'M.Title ASC',
+            'release_year': 'M.ReleaseYear DESC',  
+            'genre': 'G.Name ASC',
+            'IMDbRating': 'M.IMDbRating DESC',  # Calificación
+            'country': 'C.Name ASC',
+            'watched': 'M.Watched DESC',
+            'random': 'NEWID()'  # aleatorio!
+        }.get(order_by, 'M.IMDbRating DESC')  
+
         query = f"""
-            SELECT DISTINCT M.MovieID, M.Title, M.ReleaseYear, M.ImageFilename, M.TrailerURL,
-                    D.Name AS Director, G.Name AS Genre, M.CountryID, M.Watched, M.IMDbRating
-            FROM Movies M
-            LEFT JOIN MovieActors MA ON M.MovieID = MA.MovieID
-            LEFT JOIN Actors A ON MA.ActorID = A.ActorID
-            JOIN Directors D ON M.DirectorID = D.DirectorID
-            JOIN Genres G ON M.GenreID = G.GenreID
-            {where_clause}
-            ORDER BY M.IMDbRating desc
-            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        """
+                SELECT M.MovieID, M.Title, M.ReleaseYear, M.ImageFilename, M.TrailerURL, M.CountryID, 
+                M.GenreID, D.Name AS Director, G.Name AS Genre, C.Name AS Country, M.Watched, M.IMDbRating
+                FROM Movies M
+                LEFT JOIN MovieActors MA ON M.MovieID = MA.MovieID
+                LEFT JOIN Actors A ON MA.ActorID = A.ActorID
+                JOIN Directors D ON M.DirectorID = D.DirectorID
+                JOIN Genres G ON M.GenreID = G.GenreID
+                JOIN Countries C ON M.CountryID = C.CountryID
+                {where_clause}
+                GROUP BY M.MovieID, M.Title, M.ReleaseYear, M.ImageFilename, M.TrailerURL, 
+                M.GenreID, D.Name, G.Name, C.Name, M.Watched, M.IMDbRating, M.CountryID
+                ORDER BY {order_clause}  -- Asegúrate de tener un ORDER BY aquí
+                OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+                """
         cursor.execute(query, params + [offset, per_page])
         movies = cursor.fetchall()
 
@@ -113,8 +132,24 @@ def index():
         cursor.execute("SELECT COUNT(*) FROM Movies WHERE Watched = 1")
         total_watched = cursor.fetchone()[0]
 
+        
+        cursor.execute("SELECT GenreID, Name FROM Genres ORDER BY Name")
+        genre_list = cursor.fetchall()
+
+    query_dict = {
+        'search': search,
+        'actor': actor,
+        'director': director,
+        'country': country,
+        'genre': genre,
+        'order_by': order_by
+    }
+
+    # Eliminar campos vacíos y construir string de query
+    query_params = '&' + urlencode({k: v for k, v in query_dict.items() if v})
+
     return render_template("index.html",
-                            menu = 'index',
+                            menu='index',
                             movies=movies,
                             page=page,
                             total_pages=total_pages,
@@ -124,9 +159,11 @@ def index():
                             country=country,
                             countries_list=countries_list,
                             total_movies=total,
-                            total_watched = total_watched
+                            total_watched=total_watched,
+                            order_by=order_by,  # Pasar el orden a la plantilla
+                            genre_list=genre_list,
+                            query_params = query_params
     )
-
 
 # 🎬 Detalle de película
 @app.route('/movie/<int:movie_id>')
@@ -135,7 +172,7 @@ def movie_detail(movie_id):
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT M.movieID, M.Title, M.ReleaseYear, M.ImageFilename, M.Watched, M.IMDbRating, M.TrailerURL, D.Name as Director, G.Name as Genre, C.Name as Country
+            SELECT M.movieID, M.Title, M.ReleaseYear, M.ImageFilename, M.Watched, M.IMDbRating, M.TrailerURL, D.Name as Director, G.Name as Genre, C.Name as Country, M.CountryID
             FROM Movies M
             JOIN Directors D ON M.DirectorID = D.DirectorID
             JOIN Genres G ON M.GenreID = G.GenreID
@@ -341,7 +378,6 @@ def edit_movie(movie_id):
         saga_list = cursor.fetchall()
 
     return render_template("edit_movie.html", movie=movie, countries_list=countries_list, directors_list=directors_list, saga_list=saga_list)
-
 
 
 

@@ -1,75 +1,68 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Cargar Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<body>
+<!-- Inyectar los datos desPelículasFlask -->
+<script>
+    window.sagas = {{ sagas | tojson | safe }};
+</script>
 
+<!-- Cargar script externo -->
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
-    <!-- contenido del carrousel -->
-
-    <div id="sagaCarousel" class="carousel slide mx-auto" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            {% for i in range(0, sagas|length, 3) %}
-            <div class="carousel-item {% if i == 0 %}active{% endif %}">
-                <div class="row row-cols-1 row-cols-md-3 g-4">
-                    {% for saga in sagas[i:i+3] %}
-                    <div class="col">
-                        <div class="card saga-card h-100">
-                            {% set image = saga.image if saga.image else 'generic.jpg' %}
-                            <img src="{{ url_for('static', filename='images/sagas/' + image) }}"
-                                class="card-img-top saga-img" alt="{{ saga.name }}">
-
-                            <div class="card-body d-flex flex-column justify-content-between">
-                                <div>
-                                    <h5 class="card-title">{{ saga.name }}</h5>
-                                    <p class="card-text">
-                                        {{ saga.description | default('') | string | truncate(250, True, '...') }}
-                                    </p>
-
-                                    <small>
-                                        {% if saga.total > 0 %}
-                                        Progreso: {{ saga.watched }} / {{ saga.total }}
-                                        {% else %}
-                                        Sin películas registradas
-                                        {% endif %}
-                                    </small>
-
-                                    <div class="progress mb-2">
-                                        <div class="progress-bar"
-                                            style="width: {% if saga.total > 0 %}{{ (saga.watched / saga.total) * 100 }}{% else %}0{% endif %}%;">
-                                        </div>
+<!-- Contenido del carrusel -->
+<div id="sagaCarousel" class="carousel slide mx-auto" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        {% for i in range(0, sagas|length, 3) %}
+        <div class="carousel-item {% if i == 0 %}active{% endif %}">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for saga in sagas[i:i+3] %}
+                <div class="col">
+                    <div class="card saga-card h-100">
+                        {% set image = saga.image if saga.image else 'generic.jpg' %}
+                        <img src="{{ url_for('static', filename='images/sagas/' + image) }}"
+                            class="card-img-top saga-img" alt="{{ saga.name }}">
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div>
+                                <h5 class="card-title">{{ saga.name }}</h5>
+                                <p class="card-text justify-content-between">
+                                    {{ saga.description | default('') | string | truncate(250, True, '...') }}
+                                </p>
+                                <canvas id="progressChart-{{ saga.id }}" width="25" height="25"></canvas>
+                                <!-- <small>
+                                    {% if saga.total > 0 %}
+                                    Progreso: {{ saga.watched }} / {{ saga.total }}
+                                    {% else %}
+                                    Sin películas registradas
+                                    {% endif %}
+                                </small>
+                                <div class="progress mb-2" sytle="display:none;">
+                                    <div class="progress-bar {% if saga.total > 0 %}{{ 'bg-success' if (saga.watched / saga.total) == 1 else 'bg-warning' if (saga.watched / saga.total) >= 0.5 else 'bg-danger' }}{% else %}bg-secondary{% endif %}"
+                                        style="width: {% if saga.total > 0 %}{{ (saga.watched / saga.total) * 100 }}{% else %}0{% endif %}%;">
                                     </div>
-                                </div>
+                                </div> -->
+                            </div>
 
-                                <div class="mt-2 d-grid">
-                                    <a href="/saga/{{ saga.slug }}" class="btn btn-sm btn-outline-primary">Ver Saga</a>
-                                </div>
+                            <div class="mt-2 d-grid">
+                                <a href="/saga/{{ saga.slug }}" class="btn btn-sm btn-outline-success">Ver Saga</a>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
-
-        <button class="carousel-control-prev" type="button" data-bs-target="#sagaCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#sagaCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
+        {% endfor %}
     </div>
 
+    <button class="carousel-control-prev" type="button" data-bs-target="#sagaCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#sagaCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
 
-    {# Armar parámetros reutilizables para los enlaces #}
-    {% set query_params = '' %}
-    {% if search %}{% set query_params = query_params + '&search=' + search %}{% endif %}
-    {% if actor %}{% set query_params = query_params + '&actor=' + actor %}{% endif %}
-    {% if director %}{% set query_params = query_params + '&director=' + director %}{% endif %}
-    {% if country %}{% set query_params = query_params + '&country=' + country %}{% endif %}
-
-    {% endblock %}
-</body>
-
-</html>
+{% endblock %}

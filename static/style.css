@@ -89,6 +89,10 @@ body {
     vertical-align: middle;
 }
 
+.fi {
+    font-size: 1.8rem;
+}
+
 
 /************************************************/
 /* ordenar si quiero la tarjeta 2/3 de proporcion
@@ -129,6 +133,8 @@ a.sin-estilo {
 .stylish-select {
     background-color: #fff0f6;
     border: 2px solid #ff80ab;
+    width: 50%;
+    max-width: 200px;
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
     color: #6c757d;
@@ -223,6 +229,46 @@ a.sin-estilo {
 
 
 /* estilo de las tarjetas de sagas */
+
+.saga_title {
+    color: white;
+    text-transform: uppercase;
+}
+
+.saga_description {
+    padding: 10px 15px !important;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.saga_cant {
+    position: absolute;
+    right: 20px;
+    top: 5px;
+    size: 1.5rem;
+    text-decoration: dotted;
+
+}
+
+.fake-button {
+    display: inline-block;
+    background-color: #a6384a;
+    font-weight: bold;
+    /* Verde tipo Bootstrap success */
+    color: #fff !important;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+    cursor: default;
+    /* importante: no parece clickeable */
+}
+
+
 .saga-card {
     border: 1px solid #ddd;
     border-radius: 12px;
@@ -248,6 +294,28 @@ a.sin-estilo {
 
 .card-body {
     padding: 1rem;
+}
+
+canvas {
+    width: 75px !important;
+    /* Ancho visual */
+    height: 75px !important;
+    /* Alto visual */
+}
+
+.progress-bar.bg-success {
+    background-color: #28a745 !important;
+    /* Verde */
+}
+
+.progress-bar.bg-warning {
+    background-color: #ffc107 !important;
+    /* Amarillo */
+}
+
+.progress-bar.bg-danger {
+    background-color: #dc3545 !important;
+    /* Rojo */
 }
 
 .progress-bar {
@@ -392,4 +460,25 @@ input:focus {
 
 .links a {
     margin-left: 4px;
+}
+
+/* aca tengo mejorar el modo celular o pantallas pequeñas*/
+
+@media (max-width: 768px) {
+    .input-group {
+        flex-direction: column;
+        /* Cambia a columna en móviles */
+        align-items: stretch;
+        /* Asegura que los elementos llenen el contenedor */
+    }
+
+    .input-group input,
+    .input-group select,
+    .input-group .btn {
+        width: 100% !important;
+        /* Hacer que inputs y botones ocupen el ancho completo */
+        margin-bottom: 10px;
+        /* Espacio entre elementos */
+    }
+
 }

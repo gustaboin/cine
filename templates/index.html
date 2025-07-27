@@ -33,7 +33,7 @@
                     <br>
                     <p class="mb-1">
                         <strong>País:</strong>
-                        <span class="fi fi-{{ movie.CountryID|lower }} me-2" style="font-size: 1.5rem;"></span>
+                        <span class="fi fi-{{ movie.CountryID|lower }} me-2"></span>
 
                     </p>
                     <br>
@@ -97,6 +97,8 @@
     {% if actor %}{% set query_params = query_params + '&actor=' + actor %}{% endif %}
     {% if director %}{% set query_params = query_params + '&director=' + director %}{% endif %}
     {% if country %}{% set query_params = query_params + '&country=' + country %}{% endif %}
+    {% if genre %}{% set query_params = query_params + '&genre=' + genre %}{% endif %}
+    {% if order_by %}{% set query_params = query_params + '&order_by=' + order_by %}{% endif %}
 
     {% endblock %}
 </body>

@@ -104,7 +104,7 @@ def obtener_trailer_key(titulo):
         return None
 
 # Obtener películas sin trailer
-cursor.execute("SELECT MovieID, EnglishTitle FROM Movies WHERE TrailerURL IS NULL and ImdbRating is not null")
+cursor.execute("SELECT MovieID, Title FROM Movies WHERE movieID > 2335")
 peliculas = cursor.fetchall()
 
 for movie_id, title in peliculas:

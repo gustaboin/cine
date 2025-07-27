@@ -18,10 +18,10 @@ conn_str = os.getenv("conn_str")
 print (conn_str)
 
 # Carpeta raíz donde están las películas
-carpeta_base = r"T:\Cine\a"
-#carpeta_base = r'X:\Descargas\u-torrent\descargado\Action'
+#carpeta_base = f"T:\Cine\DAr"
+carpeta_base = r'X:\Descargas\u-torrent\descargado\SIN CLASIFICAR\Comedia negra - miedo - suspenso\zombieland'
 
-print(carpeta_base)
+#print(carpeta_base)
 # Dónde guardar las imágenes
 carpeta_imagenes = "static/images"
 
@@ -222,4 +222,63 @@ def importar_saga(collection_id):
 
     time.sleep(0.4)  # evitar rate limit
 
-importar_saga(1241)
+importar_saga(528)
+
+# importar pelicula individual
+
+def importar_pelicula_individual(tmdb_id):
+    detalles = obtener_detalles_tmdb(tmdb_id)
+
+    if not detalles:
+        print(f"❌ No se pudo obtener detalles de TMDb para ID {tmdb_id}")
+        return
+
+    titulo = detalles.get("title")
+    fecha = detalles.get("release_date", "")
+    anio = int(fecha[:4]) if fecha else 0
+
+    print(f"🎞️ Importando: {titulo} ({anio})")
+
+    # Actores
+    cast = [actor["name"] for actor in detalles.get("credits", {}).get("cast", [])]
+
+    # Poster
+    poster_path = detalles.get("poster_path")
+    filename = limpiar_nombre(titulo) + ".jpg"
+    if poster_path:
+        guardar_imagen(poster_path, filename)
+
+    # Género principal
+    genero = detalles["genres"][0]["name"] if detalles["genres"] else "Desconocido"
+
+    # Director
+    director_api = ""
+    for crew in detalles.get("credits", {}).get("crew", []):
+        if crew["job"] == "Director":
+            director_api = crew["name"]
+            break
+
+    # País
+    paises = detalles.get("production_countries", [])
+    if paises:
+        country_code = paises[0]["iso_3166_1"]
+        country_name = paises[0]["name"]
+    else:
+        country_code = 'XX'
+        country_name = 'Unknown'
+
+    insertar_en_db(
+        titulo,
+        anio,
+        director_api or "Desconocido",
+        genero,
+        country_code,
+        country_name,
+        filename,
+        cast
+    )
+
+    time.sleep(0.4)
+
+#importar_pelicula_individual(8078)
+
