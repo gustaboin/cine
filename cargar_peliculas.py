@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 # TMDb
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
-print("API KEY TMDB:", API_KEY)
 TMDB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_DETAIL_URL = "https://api.themoviedb.org/3/movie"
 

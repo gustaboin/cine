@@ -254,4 +254,24 @@ document.addEventListener('DOMContentLoaded', function ()
     }
 });
 
+/*********** ACTOR Section aca implemento un script para las bios largas  */
+
+function toggleBio()
+{
+    const preview = document.getElementById("bio-preview");
+    const full = document.getElementById("bio-full");
+    const toggle = document.getElementById("toggle-bio");
+
+    if (full.classList.contains("show"))
+    {
+        full.classList.remove("show");
+        preview.style.display = "block";
+        toggle.innerText = "Ver más";
+    } else
+    {
+        full.classList.add("show");
+        preview.style.display = "none";
+        toggle.innerText = "Ver menos";
+    }
+}
 

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container my-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a class="navbar-brand nav-title" href="/">🎬 Movie Database</a>
+            <div class="d-flex justify-content-end align-items-center">
+
+                <a href="/sagas" class="btn btn-warning btn-saga me-2">
+                    Sagas
+                </a>
+                <button class="btn btn-total me-2">
+                    🎬 Total: {{ total_movies }}
+                </button>
+                <button class="btn btn-view me-2">
+                    👁️ Vistas: {{ total_watched }}
+                </button>
+                <div class="d-flex float-right-between">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger btn-logout m-2">Cerrar Sesión</a>
+                    {%else%}
+                    <a href="{{ url_for('login') }}" class="btn btn-success btn-login m-2">Iniciar Sesión</a>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </nav>
+</div>
+<div class="actor-profile">
+    <div class="actor-left">
+        <img src="{{ url_for('static', filename='images/actors/' + actor.image) }}" alt="{{ actor.name }}">
+    </div>
+
+    <div class="actor-right">
+        <h2 class="d-flex justify-content-between mb-4 title-profile">{{ actor.name }}
+            <a href="javascript:history.back()" class="btn btn-secondary ">Regresar</a>
+        </h2>
+        <p><strong>Nacimiento:</strong> {{ actor.birthdate }}</p>
+        <p><strong>País:</strong> {{ actor.country }}</p>
+        <p class="imdb btn"><strong>IMDb:
+                <a href="https://www.imdb.com/name/{{ actor.imdb_id }}" target="_blank">
+                    {{ actor.imdb_id }}
+                </a></strong>
+        </p>
+        <div class="bio">
+            <p id="bio-preview">{{ actor.bio[:500] }}{% if actor.bio|length > 500 %}...{% endif %}</p>
+            {% if actor.bio|length > 500 %}
+            <p id="bio-full">{{ actor.bio }}</p>
+            <a href="#" id="toggle-bio" onclick="toggleBio(); return false;" class="btn btn-secondary mt-auto">Ver
+                más</a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="filmography">
+    <h3 class="title-profile">Filmografía</h3>
+    <div class="movies-grid">
+        {% for movie in movies %}
+        <div class="movie-card {% if movie.owned %}owned{% endif %}">
+            {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+            {% endif %}
+            <p>{{ movie.title }} ({{ movie.release_date[:4] if movie.release_date }})</p>
+            {% if movie.owned %}
+            <span class="badge">🎞️ En colección</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+{% endblock %}

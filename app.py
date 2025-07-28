@@ -3,6 +3,7 @@ import pyodbc
 import math
 import random
 import os
+import requests
 from dotenv import load_dotenv
 from datetime import timedelta
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -182,13 +183,13 @@ def movie_detail(movie_id):
         movie = cursor.fetchone()
 
         cursor.execute("""
-            SELECT A.Name, A.ImageFilename
+            SELECT A.Name, A.ImageFilename, A.ActorID
             FROM MovieActors MA
             JOIN Actors A ON MA.ActorID = A.ActorID
             WHERE MA.MovieID = ?
         """, (movie_id,))
         
-        actors = [{'Name': row.Name, 'ImageFilename': row.ImageFilename} for row in cursor.fetchall()]
+        actors = [{'ActorID':row.ActorID, 'Name': row.Name, 'ImageFilename': row.ImageFilename} for row in cursor.fetchall()]
 
         null_images = ['null.jpg', 'null1.jpg', 'null2.jpg', 'null3.jpg', 'null5.jpg', 'null6.jpg']
 
@@ -379,6 +380,106 @@ def edit_movie(movie_id):
 
     return render_template("edit_movie.html", movie=movie, countries_list=countries_list, directors_list=directors_list, saga_list=saga_list)
 
+# agrego un apartado para actores
+
+@app.route("/actor/<int:actor_id>")
+def actor_profile(actor_id): 
+    
+    # Conexión a la base de datos
+    with pyodbc.connect(conn_str) as conn:
+        cursor = conn.cursor()
+
+        # Obtener datos del actor incluyendo el TmdbID
+        cursor.execute("""
+            SELECT a.Name, p.Bio, p.BirthDate, p.Country, p.ImageFilename, p.TmdbID, p.Imdb_id
+            FROM ActorProfiles p
+            JOIN Actors a ON a.ActorID = p.ActorID
+            WHERE p.ActorID = ?
+        """, actor_id)
+
+        row = cursor.fetchone()
+        
+        if not row:
+            return "Actor no encontrado", 404
+
+        actor = {
+            "name": row.Name,
+            "bio": row.Bio or "Nothing here ",
+            "birthdate": row.BirthDate or "2018-09-12",
+            "country": row.Country or "no country for old men",
+            "image": row.ImageFilename or "null.jpg",
+            "tmdb_id": row.TmdbID,  # Usamos el TmdbID del actor, no el imdb_id
+            "imdb_id": row.Imdb_id or "not"
+        }
+
+
+
+        # 1. Obtener las películas del actor desde TMDb usando el TmdbID
+        movies_tmdb = get_actor_movies(actor["tmdb_id"])  # Aquí usamos el TmdbID correcto
+
+        # 2. Obtener los TMDb IDs de las películas
+        tmdb_movie_ids = [movie["id"] for movie in movies_tmdb]
+
+        # 3. Verificar qué películas están en tu base de datos
+        owned_tmdb_ids = get_movies_in_collection(tmdb_movie_ids)
+
+        # 4. Marcar cuáles películas están en la colección
+        for movie in movies_tmdb:
+            movie["owned"] = movie["id"] in owned_tmdb_ids
+
+        # Retornar al template con los datos
+        return render_template("profile.html", row=row,actor=actor, movies=movies_tmdb)
+
+
+
+# me traigo listado de peliculas para la tarjeta de actores
+
+# TMDb
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+TMDB_SEARCH_URL = "https://api.themoviedb.org/3/search/movie"
+TMDB_DETAIL_URL = "https://api.themoviedb.org/3/movie"
+
+
+def get_actor_movies(tmdb_actor_id):
+    # Usamos el TmdbID del actor
+    url = f"https://api.themoviedb.org/3/person/{tmdb_actor_id}/movie_credits?api_key={API_KEY}"
+    response = requests.get(url)
+    data = response.json()
+    
+    if response.status_code != 200:
+        print(f"Error en la llamada a TMDb: {data.get('status_message', 'Desconocido')}")
+        return []
+
+    # Obtener las películas del actor (filtrar las que tienen fecha de estreno)
+    movies = data.get("cast", [])
+    movies = sorted(
+        [m for m in movies if m.get("release_date")],
+        key=lambda x: x["release_date"],
+        reverse=True
+    )
+    return movies
+
+
+def get_movies_in_collection(tmdb_ids):
+    if not tmdb_ids:  # Si no hay IDs, no hacemos la consulta
+        return set()
+
+    # Establecer la conexión a la base de datos aquí
+    with pyodbc.connect(conn_str) as conn:
+        cursor = conn.cursor()
+
+        # Crear los placeholders para la consulta
+        placeholders = ','.join(['?'] * len(tmdb_ids))
+        query = f"SELECT TmdbID FROM Movies WHERE TmdbID IN ({placeholders})"
+        cursor.execute(query, tmdb_ids)
+        
+        # Recuperar los TmdbID de las películas que están en la colección
+        movies_in_db = set(row[0] for row in cursor.fetchall())
+
+        print(f"Películas en la base de datos: {movies_in_db}")  # Verifica las películas en tu colección
+        
+        return movies_in_db
 
 
 if __name__ == "__main__":
