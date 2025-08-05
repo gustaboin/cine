@@ -70,6 +70,7 @@
                     <option value="country" {% if order_by=='country' %}selected{% endif %}>País</option>
                     <option value="watched" {% if order_by=='Watched' %}selected{% endif %}>Vistas</option>
                 </select>
+
                 <select name="genre" class="form-select stylish-select" onchange="this.form.submit()">
                     <option value="">Selecciona un género</option>
                     {% for code, name in genre_list %}
